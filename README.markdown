@@ -4,6 +4,10 @@ Working with the Windows command line doesn't have to be risky! Delete multiple 
 
     recycle file1 file2 supports-wildcards\*.tmp
 
+# Usage
+
+[Download the main executable](http://cloud.github.com/downloads/kizzx2/cmd-recycle/recycle.exe); put it in %PATH%; 'nuff said...
+
 # How does it work?
 
 Visual Basic's [FileSystem](http://msdn.microsoft.com/en-us/library/0b485hf7(VS.80).aspx) object has the `DeleteFile()` and `DeleteDirectory()` methods which both support an argument to specify deleting to the Recycle Bin. Luckily using .NET, we rolled this with C# alright.
