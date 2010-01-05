@@ -59,7 +59,7 @@ namespace cmd_recycle
 		 * If path's wildcard does not resolve to any files, returns null.
 		 * If path does not contain a wildcard, returns string[] with only one element of the original path.
 		 */
-		protected static string[] GetWildcardFiles(string path)
+		protected static string[] ResolveWildcardFiles(string path)
 		{
 			if(!HasWildcard(path))
 				return new string[] {path};
@@ -67,9 +67,23 @@ namespace cmd_recycle
 			else
 			{
 				// Now let's resolve the wildcard
-				int slashIndex = path.LastIndexOf("\\") + 1;
-				string dirPath = path.Substring(0, slashIndex);
-				string basename = path.Substring(slashIndex, path.Length - slashIndex);
+				int slashIndex = path.LastIndexOf("\\");
+				string dirPath, basename;
+				
+				// Wait -- He might have just said "*.tmp" and expect me to 
+				// delete stuffs from the current directory!
+				if(slashIndex == -1)
+				{
+					// Let's get current directory, we don't need to go through the substring hardship.
+					dirPath = Directory.GetCurrentDirectory();
+					basename = path;
+				}
+				else
+				{
+					slashIndex++; // We need to go pass one more character; lay it out to understand.
+					dirPath = path.Substring(0, slashIndex);
+					basename = path.Substring(slashIndex, path.Length - slashIndex);
+				}
 				
 				string[] files = Directory.GetFiles(dirPath, basename);
 				
@@ -80,39 +94,47 @@ namespace cmd_recycle
 		
 		protected static void Recycle(string path)
 		{
-			// We need to use the right method call here
-			if(Directory.Exists(path))
+			try
 			{
-				CmdRecycle.myComputer.FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs,
-				                                                 RecycleOption.SendToRecycleBin);
-				Console.WriteLine(Path.GetFullPath(path));
-			}
-			
-			else
-			{
-				// It might be a wildcard or an actual file
-				
-				// Let's try to iterate the wildcard
-				string[] files = GetWildcardFiles(path);
-				if(files != null)
+				// We need to use the right method call here
+				if(Directory.Exists(path))
 				{
-					foreach(string file in files)
-					{
-						CmdRecycle.myComputer.FileSystem.DeleteFile(file, UIOption.OnlyErrorDialogs,
-	                                            RecycleOption.SendToRecycleBin);
-						Console.WriteLine(Path.GetFullPath(file));
-					}
+					CmdRecycle.myComputer.FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs,
+					                                                 RecycleOption.SendToRecycleBin);
+					Console.WriteLine(Path.GetFullPath(path));
 				}
 				
 				else
 				{
-					// File not found! Let's report it according to the situation
-					string msg;
-					if(HasWildcard(path)) msg = "Wildcard not found";
-					else msg = "Invalid file or directory path";
+					// It might be a wildcard or an actual file
 					
-					Console.WriteLine(String.Format("{0} - {1}", path, msg));
+					// Let's try to iterate the wildcard
+					string[] files = ResolveWildcardFiles(path);
+					if(files != null)
+					{
+						foreach(string file in files)
+						{
+							CmdRecycle.myComputer.FileSystem.DeleteFile(file, UIOption.OnlyErrorDialogs,
+		                                            RecycleOption.SendToRecycleBin);
+							Console.WriteLine(Path.GetFullPath(file));
+						}
+					}
+					
+					else
+					{
+						// File not found! Let's report it according to the situation
+						string msg;
+						if(HasWildcard(path)) msg = "Wildcard not found";
+						else msg = "Invalid file or directory path";
+						
+						Console.WriteLine(String.Format("{0} - {1}", path, msg));
+					}
 				}
+			}
+			catch(Exception e)
+			{
+				// Worst case, let's fail quielty without throwing tantrum
+				Console.WriteLine(String.Format("{0} - Error: {1}", path, e.GetType()));
 			}
 		}
 		
