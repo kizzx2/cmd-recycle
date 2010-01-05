@@ -85,7 +85,7 @@ namespace cmd_recycle
 			{
 				CmdRecycle.myComputer.FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs,
 				                                                 RecycleOption.SendToRecycleBin);
-				Console.WriteLine(path);
+				Console.WriteLine(Path.GetFullPath(path));
 			}
 			
 			else
