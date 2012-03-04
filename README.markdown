@@ -6,7 +6,7 @@ Working with the Windows command line doesn't have to be risky! Delete multiple 
 
 # Usage
 
-[Download the main executable](http://cloud.github.com/downloads/kizzx2/cmd-recycle/recycle.exe); put it in %PATH%; 'nuff said...
+[Download the main executable](https://github.com/kizzx2/cmd-recycle/downloads); put it in %PATH%; 'nuff said...
 
 # Changelog
 
