@@ -8,6 +8,14 @@ Working with the Windows command line doesn't have to be risky! Delete multiple 
 
 [Download the main executable](http://cloud.github.com/downloads/kizzx2/cmd-recycle/recycle.exe); put it in %PATH%; 'nuff said...
 
+# Changelog
+
+v0.2 - Proper exit codes when encountering error. If multiple files are given, the exit code for the last argument will be returned.
+
+- 0: Success
+- 1: Miscellaneous errors (such as permission)
+- 2: File/pattern not found
+
 # How does it work?
 
 Visual Basic's [`FileSystem`][vb_filesystem] object has the `DeleteFile()` and `DeleteDirectory()` methods which both support an argument to specify deleting to the Recycle Bin. Luckily using .NET, we rolled this with C# alright.
